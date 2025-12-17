@@ -1,26 +1,19 @@
-<!--
-  - @Project: Grand Luxury Tree - Christmas Edition (Cloud Image Support)
-  - @Author: wp/electronicminer (Modified for Cloud Support)
-  - @Date: 2025-12-07
-  - @Description: 3D Christmas tree with customizable Cloud Image loading.
-  - 如需使用或分发，请务必保留此作者声明。
--->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Grand Luxury Tree - Cloud Edition</title>
+    <title>Recap 2025 Me and You 💗</title>
     <style>
-        /* 修改背景为深色渐变 */
+        /* --- CẤU HÌNH GIAO DIỆN --- */
         body { 
             margin: 0; 
             overflow: hidden; 
             background: radial-gradient(circle at center, #0f2027 0%, #203a43 50%, #2c5364 100%); 
             background-color: #050d1a; 
             font-family: 'Times New Roman', serif; 
-            touch-action: none; /* 禁止浏览器默认的缩放和平移 */
-            user-select: none;  /* 禁止选中文字 */
+            touch-action: none; 
+            user-select: none;  
             -webkit-user-select: none;
         }
         #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; cursor: grab; }
@@ -37,9 +30,7 @@
             transition: opacity 0.5s ease;
         }
         
-        .ui-hidden { opacity: 0 !important; pointer-events: none !important; }
-
-        /* Loading */
+        /* Loading Screen */
         #loader {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #050d1a; z-index: 100;
@@ -57,7 +48,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Typography */
+        /* Tiêu đề */
         h1 { 
             color: #fceea7; font-size: 8vw; 
             max-size: 56px; margin: 0; font-weight: 400; 
@@ -71,54 +62,11 @@
         }
         @media (min-width: 768px) { h1 { font-size: 56px; } }
 
-        /* Controls */
-        .controls-wrapper {
-            position: absolute; top: 100px; right: 20px;        
-            pointer-events: auto;
-            display: flex; flex-direction: column; align-items: flex-end;
-            gap: 10px; z-index: 20;
-            transition: opacity 0.5s ease;
-        }
-
-        .btn-group {
-            display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
-        }
-
-        .control-btn {
-            background: rgba(20, 20, 20, 0.6); 
-            border: 1px solid rgba(212, 175, 55, 0.4); 
-            color: #d4af37; padding: 10px 20px; 
-            cursor: pointer; text-transform: uppercase; 
-            letter-spacing: 2px; font-size: 10px;
-            transition: all 0.4s;
-            display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px); min-width: 120px;
-        }
+        /* --- ẨN CÁC NÚT ĐIỀU KHIỂN & CAMERA THEO YÊU CẦU --- */
+        .controls-wrapper { display: none !important; } /* Ẩn nút upload/camera */
+        #webcam-wrapper { display: none !important; }   /* Ẩn khung hình camera */
         
-        .control-btn.active {
-            background: rgba(212, 175, 55, 0.8); color: #000;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
-        }
-        .control-btn:hover { 
-            background: #d4af37; color: #000; 
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-        
-        .hint-text {
-            color: rgba(212, 175, 55, 0.5); font-size: 9px;
-            letter-spacing: 1px; text-transform: uppercase;
-            text-align: right; margin-top: 5px; max-width: 200px;
-        }
-
-        input[type="file"] { display: none; }
-/* //     <!--
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> */
-        /* Mode Buttons (Bottom) - New for Touch */
+        /* Nút chế độ bên dưới (Giữ lại để trải nghiệm nếu muốn click tay) */
         #mode-bar {
             position: absolute; bottom: 30px; left: 50%;
             transform: translateX(-50%);
@@ -135,23 +83,11 @@
             backdrop-filter: blur(4px);
         }
         .mode-btn:active { transform: scale(0.9); background: #d4af37; color: #000; }
-        
-        /* Webcam feedback */
-        #webcam-wrapper {
-            position: absolute; bottom: 100px; left: 20px;         
-            width: 120px; height: 90px;
-            border: 1px solid rgba(212, 175, 55, 0.5); 
-            box-shadow: 0 0 20px rgba(0,0,0,0.9);
-            border-radius: 4px; overflow: hidden; 
-            opacity: 0; pointer-events: none;
-            z-index: 50; background: #000;
-            transition: opacity 0.5s ease; 
-        }
-        #webcam { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 
+        /* Hướng dẫn nhỏ */
         #debug-info {
             position: absolute; bottom: 5px; left: 5px;
-            color: rgba(212, 175, 55, 0.6); font-size: 10px;
+            color: rgba(212, 175, 55, 0.4); font-size: 10px;
             font-family: monospace; pointer-events: none; z-index: 51;
             width: 100%; text-align: center;
         }
@@ -166,6 +102,9 @@
             z-index: 200; text-align: center;
             display: none; border-radius: 8px; min-width: 200px;
         }
+        
+        /* Video element ẩn (vẫn cần để MediaPipe đọc dữ liệu) */
+        #webcam { width: 1px; height: 1px; opacity: 0; position: absolute; top:0; left:0;}
     </style>
     
     <style>
@@ -194,30 +133,8 @@
     <div id="canvas-container"></div>
 
     <div id="ui-layer">
-        <h1>Merry Christmas</h1>
+        <h1>QM PH RECAP 2025</h1>
         
-        <div class="controls-wrapper">
-            <div class="btn-group">
-                <div class="control-btn" id="cam-btn">📷 Enable Gesture</div>
-                <label class="control-btn">
-                    Select Local Folder
-                    <input type="file" id="folder-input" webkitdirectory directory multiple>
-                </label>
-                <label class="control-btn">
-                    Add Local Files
-                    <input type="file" id="file-input" multiple accept="image/*">
-                </label>
-            </div>
-            <div class="hint-text">Cloud Images Loaded. Add local files if needed.</div>
-        </div>
-    <!--
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
-        <!-- 触屏模式切换按钮 -->
         <div id="mode-bar">
             <div class="mode-btn" onclick="setMode('TREE')" title="Tree Mode">🎄</div>
             <div class="mode-btn" onclick="setMode('SCATTER')" title="Scatter Mode">✨</div>
@@ -228,7 +145,8 @@
     <div id="webcam-wrapper">
         <video id="webcam" autoplay playsinline webkit-playsinline></video>
     </div>
-    <div id="debug-info">Drag to rotate • Tap photo to view</div>
+    
+    <div id="debug-info">Show your hand to control magic ✨</div>
 
     <script type="module">
         import * as THREE from 'three';
@@ -238,7 +156,7 @@
         import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'; 
         import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
-        // --- 核心配置 ---
+        // --- CẤU HÌNH NGƯỜI DÙNG ---
         const CONFIG = {
             colors: {
                 bg: 0x050d1a, 
@@ -256,19 +174,10 @@
             },
             camera: { z: 50 },
             preload: {
-                // 设置为 false 关闭本地自动扫描，因为我们现在使用云端图片
-                autoScanLocal: false, 
-                
-                // 开启云端图片加载
-                useCloudImages: true,
-                
-                // --- 【在这里自定义您的云端图片链接】 ---
-                // 支持 .jpg, .png, .jpeg 等格式
-                cloudImageUrls: [
-                  
-                    // 在这里添加更多链接，注意用逗号分隔，链接用引号包围
-                ],
-                scanCount: 200, 
+                autoScanLocal: true, 
+                useCloudImages: false,
+                cloudImageUrls: [],
+                scanCount: 10
             }
         };
 
@@ -293,15 +202,8 @@
         let mouse = new THREE.Vector2();
         
         const debugInfo = document.getElementById('debug-info');
-        const camBtn = document.getElementById('cam-btn');
         let isCameraRunning = false;
 
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
         window.setMode = (mode) => {
             if (mode === 'FOCUS_RANDOM') {
                 STATE.mode = 'FOCUS';
@@ -321,7 +223,7 @@
             createParticles(); 
             createDust();
             createSnow();
-            loadPredefinedImages(); // 这里的逻辑已更新，支持云图片
+            loadPredefinedImages(); 
             setupPostProcessing();
             setupEvents();
             setupTouchAndClick(); 
@@ -330,10 +232,13 @@
             loader.style.opacity = 0;
             setTimeout(() => loader.remove(), 800);
 
+            // --- TỰ ĐỘNG BẬT CAMERA (GESTURE) ---
+            initMediaPipe();
+
             animate();
         }
 
-        // --- 触屏与点击逻辑 (Raycaster) ---
+        // --- Logic Raycaster & Touch ---
         function setupTouchAndClick() {
             const container = document.getElementById('canvas-container');
             
@@ -405,13 +310,7 @@
                 lastTap = currentTime;
             });
         }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
-        // --- 核心 Three.js 逻辑 ---
+
         function initThree() {
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
@@ -477,13 +376,7 @@
             caneTexture.wrapS = THREE.RepeatWrapping; caneTexture.wrapT = THREE.RepeatWrapping;
             caneTexture.repeat.set(3, 3);
         }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
-        // --- 粒子与图片系统 ---
+
         function createSnow() {
             const geometry = new THREE.BufferGeometry();
             const vertices = []; const velocities = [];
@@ -566,12 +459,6 @@
                 }
                 const lerpSpeed = (mode === 'FOCUS' && this.mesh === focusTargetMesh) ? 5.0 : 2.0; 
                 this.mesh.position.lerp(target, lerpSpeed * dt);
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
                 if (mode === 'SCATTER') {
                     this.mesh.rotation.x += this.spinSpeed.x * dt;
                     this.mesh.rotation.y += this.spinSpeed.y * dt;
@@ -624,12 +511,7 @@
             const greenMat = new THREE.MeshStandardMaterial({ color: CONFIG.colors.deepGreen, metalness: 0.2, roughness: 0.8, emissive: 0x002200, emissiveIntensity: 0.2 });
             const redMat = new THREE.MeshPhysicalMaterial({ color: CONFIG.colors.accentRed, metalness: 0.3, roughness: 0.2, clearcoat: 1.0, emissive: 0x330000 });
             const candyMat = new THREE.MeshStandardMaterial({ map: caneTexture, roughness: 0.4 });
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
+
             for (let i = 0; i < CONFIG.particles.count; i++) {
                 const rand = Math.random();
                 let mesh, type;
@@ -694,76 +576,66 @@
             particleSystem.push(new Particle(group, 'PHOTO', false));
             updatePhotoLayout();
         }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
-        function handleImageUpload(e) {
-            const files = e.target.files;
-            if(!files.length) return;
-            Array.from(files).forEach(f => {
-                if (!f.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    new THREE.TextureLoader().load(ev.target.result, (t) => {
-                        t.colorSpace = THREE.SRGBColorSpace;
-                        addPhotoToScene(t);
-                    });
-                }
-                reader.readAsDataURL(f);
-            });
-        }
-        
+
         function loadPredefinedImages() {
-            const loader = new THREE.TextureLoader();
-            
-            // 1. 优先加载配置的云端图片
-            if (CONFIG.preload.useCloudImages && CONFIG.preload.cloudImageUrls.length > 0) {
-                CONFIG.preload.cloudImageUrls.forEach(url => {
+    const loader = new THREE.TextureLoader();
+    
+    // Logic tải ảnh Cloud (giữ lại nếu cần)
+    if (CONFIG.preload.useCloudImages && CONFIG.preload.cloudImageUrls.length > 0) {
+        CONFIG.preload.cloudImageUrls.forEach(url => {
+            loader.load(url, (t) => { t.colorSpace = THREE.SRGBColorSpace; addPhotoToScene(t); });
+        });
+    }
+
+    // Logic tải ảnh Local từ thư mục "images"
+    if (CONFIG.preload.autoScanLocal) {
+        console.log(`Đang quét ${CONFIG.preload.scanCount} ảnh từ thư mục images...`);
+        
+        for (let i = 1; i <= CONFIG.preload.scanCount; i++) {
+            // Đường dẫn giả định
+            const pathJpg = `./images/${i}.jpg`;
+            const pathPng = `./images/${i}.png`;
+
+            // Thử tải file .jpg trước
+            loader.load(
+                pathJpg,
+                (t) => { 
+                    // Thành công thì thêm vào cây
+                    t.colorSpace = THREE.SRGBColorSpace; 
+                    addPhotoToScene(t); 
+                },
+                undefined, // onProgress (bỏ qua)
+                (err) => {
+                    // Nếu lỗi (không tìm thấy .jpg), thử tải .png
                     loader.load(
-                        url,
+                        pathPng,
                         (t) => {
                             t.colorSpace = THREE.SRGBColorSpace;
                             addPhotoToScene(t);
                         },
                         undefined,
                         (err) => {
-                            console.warn("Failed to load cloud image:", url);
+                            // Nếu cả jpg và png đều không có thì thôi
+                            // console.warn(`Không tìm thấy ảnh số ${i}`);
                         }
                     );
-                });
-            }
-
-            // 2. 如果开启了本地自动扫描 (CONFIG.preload.autoScanLocal 为 true)
-            if (CONFIG.preload.autoScanLocal) {
-                for (let i = 1; i <= CONFIG.preload.scanCount; i++) {
-                    const pathJpg = `./images/(${i}).jpg`;
-                    const pathPng = `./images/(${i}).png`;
-                    loader.load(pathJpg, (t) => { t.colorSpace = THREE.SRGBColorSpace; addPhotoToScene(t); }, undefined, () => {
-                             loader.load(pathPng, (t) => { t.colorSpace = THREE.SRGBColorSpace; addPhotoToScene(t); }, undefined, () => {} );
-                    });
                 }
-            }
+            );
         }
+    }
+}
 
-        // --- MEDIAPIPE ---
         function showMsg(txt) {
             const box = document.getElementById('msg-box');
             box.innerText = txt; box.style.display = 'block';
             setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
+
+        // --- MEDIAPIPE AUTO START ---
         async function initMediaPipe() {
             if (isCameraRunning) return;
-            camBtn.innerText = "Initializing...";
-            debugInfo.innerText = "Loading AI models...";
+            // Không hiện UI nữa vì đã ẩn, chỉ chạy logic ngầm
+            debugInfo.innerText = "Initializing AI...";
             video = document.getElementById('webcam');
             try {
                 const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
@@ -775,18 +647,15 @@
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
                 video.addEventListener("loadeddata", predictWebcam);
-                document.getElementById('webcam-wrapper').style.opacity = 1;
-                debugInfo.innerText = "Gesture Active: Show Hand";
-                camBtn.innerText = "Gesture Active";
-                camBtn.classList.add('active');
+                
+                // Camera đã chạy, nhưng giao diện vẫn ẩn (display: none trong CSS)
+                debugInfo.innerText = "Gesture Active: Show Hand (Pinch to Zoom)";
                 isCameraRunning = true;
             } catch(e) {
                 console.warn("Camera error:", e);
                 let msg = "Camera Error: " + e.name;
                 if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') msg = "Please allow camera access!";
-                else if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') msg = "HTTPS required for camera!";
                 debugInfo.innerText = msg; showMsg(msg);
-                camBtn.innerText = "Retry Camera";
             }
         }
 
@@ -816,7 +685,7 @@
                 const pinchDist = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
                 const extensionRatio = avgTipDist / handSize; const pinchRatio = pinchDist / handSize;
                 
-                debugInfo.innerText = `Gesture Detected: ${STATE.mode}`;
+                // debugInfo.innerText = `Gesture Detected: ${STATE.mode}`; // Tắt log đỡ rối mắt
 
                 if (extensionRatio < 1.5) { STATE.mode = 'TREE'; STATE.focusTarget = null; }
                 else if (pinchRatio < 0.35) {
@@ -830,12 +699,7 @@
                 STATE.hand.detected = false;
             }
         }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
+
         function setupEvents() {
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
@@ -843,15 +707,11 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 composer.setSize(window.innerWidth, window.innerHeight);
             });
-            document.getElementById('file-input').addEventListener('change', handleImageUpload);
-            document.getElementById('folder-input').addEventListener('change', handleImageUpload);
-            camBtn.addEventListener('click', () => { initMediaPipe(); });
+            // Phím tắt H ẩn hiện UI debug nếu cần
             window.addEventListener('keydown', (e) => {
                 if (e.key.toLowerCase() === 'h') {
-                    const controls = document.querySelector('.controls-wrapper');
-                    if (controls) controls.classList.toggle('ui-hidden');
-                    const webcam = document.getElementById('webcam-wrapper');
-                    if(webcam) webcam.classList.toggle('ui-hidden');
+                    const debug = document.getElementById('debug-info');
+                    if(debug) debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
                 }
             });
         }
@@ -860,9 +720,7 @@
             requestAnimationFrame(animate);
             const dt = clock.getDelta();
 
-            // 交互逻辑核心：手势优先 > 触摸 > 自动旋转
             if (STATE.hand.detected) {
-                // 手势控制
                 if (STATE.mode === 'SCATTER') {
                     const targetRotY = STATE.hand.x * Math.PI * 0.9; 
                     const targetRotX = STATE.hand.y * Math.PI * 0.25;
@@ -872,9 +730,9 @@
                     STATE.rotation.y += 0.3 * dt;
                 }
             } else if (STATE.touch.active) {
-                // 触摸/鼠标拖动控制
+                // Touch/Mouse active
             } else {
-                // 自动闲置动画
+                // Auto rotate when idle
                 if(STATE.mode === 'TREE') {
                     STATE.rotation.y += 0.3 * dt;
                     STATE.rotation.x += (0 - STATE.rotation.x) * 2.0 * dt;
@@ -882,12 +740,7 @@
                     STATE.rotation.y += 0.1 * dt; 
                 }
             }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
+
             mainGroup.rotation.y = STATE.rotation.y;
             mainGroup.rotation.x = STATE.rotation.x;
 
@@ -895,14 +748,8 @@
             updateSnow();
             composer.render();
         }
-//   - @Project: Grand Luxury Tree - Christmas Edition (Touch & Gesture)
-//   - @Author: wp/electronicminer qq:2013248845
-//   - @Date: 2025-12-07
-//   - @Description: 3D Christmas tree with dual control: AI Hand Gestures + Touch/Mouse Interaction.
-//   - 如需使用或分发，请务必保留此作者声明。
-// --> 
+
         init();
     </script>
 </body>
-
 </html>
