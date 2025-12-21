@@ -306,43 +306,41 @@
             animate();
         }
 
-        // --- HÀM TỰ ĐỘNG TẢI ẢNH TỪ THƯ MỤC MÁY ---
+        // --- HÀM TỰ ĐỘNG TẢI ẢNH (HỖ TRỢ CẢ CHỮ HOA .JPG VÀ CHỮ THƯỜNG .jpg) ---
         function loadLocalImages() {
             const loader = new THREE.TextureLoader();
             const path = CONFIG.preload.folderPath;
 
-            // Vòng lặp quét file từ 1 đến số lượng quy định
-            for (let i = 1; i <= CONFIG.preload.totalImagesToCheck; i++) {
+            // Hàm hỗ trợ load đệ quy để thử từng đuôi file
+            const tryLoadImage = (index, extensions) => {
+                if (extensions.length === 0) return; // Hết đuôi để thử thì dừng
                 
-                // 1. Thử load đuôi JPG
-                const fileJpg = `${path}${i}.jpg`;
+                const ext = extensions[0]; // Lấy đuôi đầu tiên (ví dụ .jpg)
+                const url = `${path}${index}${ext}`;
+                
                 loader.load(
-                    fileJpg,
+                    url,
                     (texture) => {
+                        // Thành công!
                         texture.colorSpace = THREE.SRGBColorSpace;
                         addPhotoToScene(texture);
                     },
-                    undefined, // onProgress
+                    undefined,
                     (err) => {
-                        // 2. Nếu không thấy JPG, thử load đuôi PNG
-                        const filePng = `${path}${i}.png`;
-                        loader.load(filePng, (t) => {
-                            t.colorSpace = THREE.SRGBColorSpace;
-                            addPhotoToScene(t);
-                        }, undefined, 
-                        (err2) => {
-                             // 3. Nếu không thấy PNG, thử load JPEG
-                             const fileJpeg = `${path}${i}.jpeg`;
-                             loader.load(fileJpeg, (t) => {
-                                t.colorSpace = THREE.SRGBColorSpace;
-                                addPhotoToScene(t);
-                             });
-                        });
+                        // Thất bại (không tìm thấy file), thử đuôi tiếp theo
+                        tryLoadImage(index, extensions.slice(1));
                     }
                 );
+            };
+
+            // Danh sách các đuôi file muốn thử tìm
+            // Code sẽ tìm theo thứ tự: 1.jpg -> 1.JPG -> 1.png -> 1.PNG -> 1.jpeg
+            const extensionsToCheck = ['.jpg', '.JPG', '.png', '.PNG', '.jpeg', '.JPEG'];
+
+            for (let i = 1; i <= CONFIG.preload.totalImagesToCheck; i++) {
+                tryLoadImage(i, extensionsToCheck);
             }
         }
-
         // --- CÁC HÀM CƠ BẢN (GIỮ NGUYÊN) ---
         function initThree() {
             const container = document.getElementById('canvas-container');
